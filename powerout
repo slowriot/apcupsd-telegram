@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# This shell script if placed in /etc/apcupsd
+# will be called by /etc/apcupsd/apccontrol when the UPS
+# goes on batteries.
+# We send an email message to root to notify him.
+#
+
+scriptdir=$(dirname "${BASH_SOURCE[0]}")
+status=$(/sbin/apcaccess status)
+
+linev=$(grep "^LINEV" <<< "$status" | cut -d ':' -f 2- | sed 's/^ *//g')
+lastxfer=$(grep "^LASTXFER" <<< "$status" | cut -d ':' -f 2- | sed 's/^ *//g')
+
+"$scriptdir/send_to_telegram.sh" "Power: Outage: $lastxfer $linev"
+# transfer reason (LASTXFER), % battery, load, etc
+exit 0

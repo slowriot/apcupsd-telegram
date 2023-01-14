@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# This shell script if placed in /etc/apcupsd
+# will be called by /etc/apcupsd/apccontrol when the UPS
+# goes on batteries.
+# We send an email message to root to notify him.
+#
+
+scriptdir=$(dirname "${BASH_SOURCE[0]}")
+status=$(/sbin/apcaccess status)
+
+tonbatt=$(grep "^TONBATT" <<< "$status" | cut -d ':' -f 2- | sed 's/^ *//g')
+bcharge=$(grep "^BCHARGE" <<< "$status" | cut -d ':' -f 2- | sed 's/^ *//g; s/ Percent/%/')
+timeleft=$(grep "^TIMELEFT" <<< "$status" | cut -d ':' -f 2- | sed 's/^ *//g;')
+loadpct=$(grep "^LOADPCT" <<< "$status" | cut -d ':' -f 2- | sed 's/^ *//g; s/ Percent/%/')
+
+"$scriptdir/send_to_telegram.sh" "Power: Outage ongoing, running on UPS batteries for $tonbatt. Battery charge $bcharge: ${timeleft,,} remaining at $loadpct load."
+# TODO: pin the message
+exit 0
