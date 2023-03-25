@@ -3,7 +3,7 @@
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
 
-token="$(cat telegram_bot_token.txt)"
+token="$(cat "$scriptdir/telegram_bot_token.txt")"
 
 endpoint="https://api.telegram.org"
 api="$endpoint/bot$token"
