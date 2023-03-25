@@ -8,6 +8,10 @@
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
 status=$(/sbin/apcaccess status)
+if [ "$?" != 0 ]; then
+  "$scriptdir/send_to_telegram.sh" "Power: Outage - details unknown, cannot reach apcupsd"
+  exit 0
+fi
 
 linev=$(grep "^LINEV" <<< "$status" | cut -d ':' -f 2- | sed 's/^ *//g')
 lastxfer=$(grep "^LASTXFER" <<< "$status" | cut -d ':' -f 2- | sed 's/^ *//g')
